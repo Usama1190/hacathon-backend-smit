@@ -1,132 +1,36 @@
 import express from 'express';
+import cors from 'cors';
 import dotenv from 'dotenv';
-import { taskRoutes } from './routes/taskRoutes.js';
-import { enums } from './constant/enum.js';
-import mongoose from 'mongoose';
-import cors from "cors";
+import dbConnection from './db/dbConnection.js';
+import beneficiaryRoutes from './routes/beneficiaryRoutes.js';
+import authRoutes from "./routes/authRoutes.js";
 
-/*
-
-mongodb
-username: usamaisrar1190
-password: hxwqKnbEW8n5M22x
-
-*/
-
-const app = express();
 dotenv.config();
 
-app.use(cors());
+const app = express();
 
+// Middleware
+app.use(cors());
 app.use(express.json());
 
-app.use('/tasks', taskRoutes)
+
+// Connect to MongoDB
+dbConnection();
+// Routes
+
+// Authentication routes
+app.use("/api/auth", authRoutes);
+
+// Beneficiary routes
+app.use("/api/beneficiaries", beneficiaryRoutes);
+
 
 app.get('/', (req, res) => {
-    try {
-        res.status(200).send({ status: 200, message: enums.SUCCESS })
-    }
-    catch(error) {
-        res.status(400).send({ status: 400, message: enums.ERROR_MSG })
-    }
-})
+    res.send('Welcome to the Beneficiary Management App!');
+});
 
-const MONGODB_URI = process.env.MONGODB_URI;
-
-
-/*  
-
-mongoose.connect(MONGODB_URI)
-.then(() => {
-    console.log('db connected successfully!');
-    
-})
-.catch((error) => {
-    console.log('db not connected!', error);
-    
-})
-
-*/
-
-
-const dbConnection = async() => {
-    try {
-        await mongoose.connect(MONGODB_URI);
-        console.log('db connected successfully!');
-        
-    } catch (error) {
-        console.log('db not connected!', error);
-        
-    }
-}
-
-dbConnection();
-
-
+// Start Server
 const PORT = process.env.PORT || 8080;
-
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
-})
-
-
-
-
-
-
-
-
-
-/*
-
-// Extracted code
-
-import express from 'express'
-import dotenv from 'dotenv';
-import taskRoutes from './routes/taskRoutes.js';
-import mongoose from 'mongoose';
-// 
-const app = express();
-dotenv.config();
-
-
-app.use(express.json());
-
-const PORT = process.env.PORT || 8080;
-const MONGODB_URI = process.env.MONGODB_URI;
-
-app.get('/',(req,res)=>{
-    res.send("welcome to backend")
-})
-
-app.use('/tasks',taskRoutes);
-
-
-// mongoose.connect(MONGODB_URI)
-// .then(()=>{
-//     console.log("db connected successfully")
-// })
-// .catch((error)=>{
-//     console.log("db not connected" , error);
-// })
-
-const dbConnection = async()=>{
-    try{
-        await mongoose.connect(MONGODB_URI)
-        console.log("db connected succesfully")
-    }
-    catch(error){
-        console.log("db is not connected",error)
-    }
-}
-dbConnection();
-
-
-
-
-app.listen(PORT,()=>{
-    console.log('server started')
-})
-
-
-*/
+});
