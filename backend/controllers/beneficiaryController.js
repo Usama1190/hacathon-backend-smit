@@ -91,9 +91,6 @@ export const searchBeneficiaries = async (req, res) => {
     }
 };
 
-
-
-
 export {
     getBeneficiaries,
     getBeneficiaryById,
